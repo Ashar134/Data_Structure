@@ -1,0 +1,200 @@
+#include <iostream>
+using namespace std;
+class Node
+{
+public:
+    Node *next;
+    Node *prev;
+    string info;
+
+    Node(string data)
+    {
+        info = data;
+        next = NULL;
+        prev = NULL;
+    }
+};
+
+class DoublyCircluarlist
+{
+private:
+    Node *head;
+    int length;
+
+public:
+    DoublyCircluarlist()
+    {
+        head = NULL;
+        length = 0;
+    }
+
+    void insert(string data)
+    {
+        Node *newNode = new Node(data);
+
+        if (head == NULL)
+        {
+            head = newNode;
+            newNode->next = head;
+        }
+        else
+        {
+            Node *temp = head;
+
+            while (temp->next != head)
+            {
+                temp = temp->next;
+            }
+            temp->next = newNode;
+            newNode->prev = temp;
+            newNode->next = head;
+            head->prev = newNode;
+        }
+        length++;
+    }
+
+    void display()
+    {
+        Node *temp = head;
+        if (head == NULL)
+        {
+            cout << "List is Empty" << endl;
+            return;
+        }
+        cout<<"Current Person in the Circle :";
+        do
+        {
+            cout << " " << temp->info;
+            temp = temp->next;
+
+        } while (temp != head);
+        cout<<endl;
+        cout<<"-------------------------"<<endl;
+    }
+
+    Node *Search(string name)
+    {
+        Node *current = head;
+        do
+        {
+            if (current->info == name)
+            {
+                return current;
+            }
+            current = current->next;
+        } while (current != head);
+
+        return nullptr;
+    }
+
+    void eliminatePerosn(string name, int jumpValue, int choice)
+    {
+        
+        Node *current = Search(name);
+
+        for (int i = 0; i < jumpValue; i++)
+        {
+            if (choice == 1) // Move toward clockwise
+            {
+                current = current->next;
+            }
+            else
+            {
+                current = current->prev; // Move toward AntiClockwise
+            }
+        }
+
+        cout << "Jump At Now :" << current->info << endl;
+
+        while (head->next != head)
+        {
+            if (choice == 1)    //Clockwise Elimination
+            {
+                Node *nextPerson = current->next;
+                remove(current);
+                current = nextPerson;
+            }
+            else                           
+            {
+                Node *prevPerson = current->prev;        // Anticlockwise Elimination
+                remove(current);
+                current = prevPerson;
+            }
+        }
+        cout << "The Survivor is :" << head->info << endl;
+    }
+
+    void remove(Node *current)
+    {
+        if (current == NULL)
+        {
+            cout << "list is Empty" << endl;
+            return;
+        }
+
+        Node *prevNode = current->prev;
+        Node *nextNode = current->next;
+
+        prevNode->next = nextNode;
+        nextNode->prev = prevNode;
+
+        if (current == head)
+        {
+            head = nextNode;
+        }
+
+        cout << "Eliminate person " << current->info << endl;
+        delete current;
+
+        length--;
+    }
+};
+
+int main()
+{
+    DoublyCircluarlist obj;
+    int choice;
+    string personName;
+    int jumpValue;
+    int chooseDirection;
+    do
+    {
+        cout << "Press 1 | To Add Person" << endl;
+        cout << "Press 2 | To Eliminate Person" << endl;
+        cout << "Press 3 | To Exist " << endl;
+        cin >> choice;
+        cout << "-----------------------------"<<endl;
+  
+        switch (choice)
+        {
+        case 1:
+            cout << "Enter Name :";
+            cin >> personName;
+            obj.insert(personName);
+            cout << "Person '" << personName << "' Added to Circle" << endl;
+            obj.display();
+            break;
+
+        case 2:
+
+            cout << "Enter the Starting Person Name :";
+            cin >> personName;
+            cout << "Enter the Jump Value :";
+            cin >> jumpValue;
+            cout << "Press 1 | To Clockwise " << endl;
+            cout << "Press 2 | To AntiClockwise " << endl;
+            cin >> chooseDirection;
+
+            obj.eliminatePerosn(personName, jumpValue, chooseDirection);
+            break;
+
+        default:
+            cout << "Exist the Program " << endl;
+        }
+        
+    } while (choice != 3);
+
+  
+
+    return 0;
+}
